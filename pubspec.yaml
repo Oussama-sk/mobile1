@@ -1,0 +1,34 @@
+name: test1
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/page1.png
+    - assets/page2.png
+    - assets/page3.png
+    - assets/page4.png
+    - assets/page5.png
+    - assets/p1.png
+    - assets/p2.png
+    - assets/p3.png
+    - assets/p4.png
+    - assets/p5.png
+
