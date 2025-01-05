@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'resultpage.dart';
 
 class TestPage extends StatefulWidget {
-  final bool isTest; // Indicates if the current test is for color blindness
-  final int photoIndex; // Index of the current photo being displayed
-  final List<int> responses; // List of user responses
-  final int colorBlindnessCounter; // Counter for correct color blindness answers
-  final int lowVisionCounter; // Counter for correct low vision answers
+  final bool isTest;
+  final int photoIndex;
+  final List<int> responses;
+  final int colorBlindnessCounter;
+  final int lowVisionCounter;
+  final String username;
 
   TestPage({
     required this.isTest,
@@ -14,6 +16,7 @@ class TestPage extends StatefulWidget {
     required this.responses,
     required this.colorBlindnessCounter,
     required this.lowVisionCounter,
+    required this.username,
   });
 
   @override
@@ -21,7 +24,6 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  // List of color blindness test photos
   final List<String> colorBlindnessPhotos = [
     'assets/page1.png',
     'assets/page2.png',
@@ -30,10 +32,8 @@ class _TestPageState extends State<TestPage> {
     'assets/page5.png',
   ];
 
-  // Correct answers for color blindness photos
   final List<int> colorBlindnessAnswers = [1, 4, 3, 5, 2];
 
-  // List of low vision test photos
   final List<String> lowVisionPhotos = [
     'assets/p1.png',
     'assets/p2.png',
@@ -42,12 +42,14 @@ class _TestPageState extends State<TestPage> {
     'assets/p5.png',
   ];
 
-  // Correct answers for low vision photos
   final List<int> lowVisionAnswers = [1, 6, 2, 3, 5];
+
+  String getCurrentDate() {
+    return DateFormat('yyyy-MM-dd').format(DateTime.now());
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Select the appropriate photo list based on the test type
     List<String> photos = widget.isTest ? colorBlindnessPhotos : lowVisionPhotos;
     double imgWidth = widget.isTest ? 280 : 25;
     double imgHeight = widget.isTest ? 280 : 25;
@@ -56,11 +58,32 @@ class _TestPageState extends State<TestPage> {
       backgroundColor: Colors.lightGreen[50],
       appBar: AppBar(
         title: Text(widget.isTest ? 'Color Blindness Test' : 'Low Vision Test'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                getCurrentDate(),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(height: widget.isTest ? 50 : 150), // Space above the image, more for low vision test
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Text(
+                'Welcome, ${widget.username}',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(height: widget.isTest ? 50 : 150),
           Center(
             child: Image.asset(
               photos[widget.photoIndex],
@@ -74,26 +97,26 @@ class _TestPageState extends State<TestPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GridView.count(
-                  crossAxisCount: 3, // number of column
-                  shrinkWrap: true, // They only take up the space their children need ( 3 column )
-                  padding: const EdgeInsets.symmetric(horizontal: 20), // space between 3 col and left,right
-                  children: generateOptions(widget.isTest), // Generate option buttons
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: generateOptions(widget.isTest),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 40.0), //External padding for "Nothing" option
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 40.0),
                   child: Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        backgroundColor: Colors.white60, // Option button background color
-                        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 80.0), // Internal padding
+                        backgroundColor: Colors.white60,
+                        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 80.0),
                       ),
-                      onPressed: () => handleOptionSelection(0), // "Nothing" option
+                      onPressed: () => handleOptionSelection(0),
                       child: Text(
                         'Nothing',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 30),
                       ),
                     ),
                   ),
@@ -106,10 +129,8 @@ class _TestPageState extends State<TestPage> {
     );
   }
 
-  // Generate the option buttons based on the test type
   List<Widget> generateOptions(bool isTest) {
-    return List.generate(6, (index) { // index start with value 0
-      // Set the button text to numbers for color blindness or letters for low vision
+    return List.generate(6, (index) {
       String text = isTest
           ? (index + 1).toString()
           : String.fromCharCode(65 + index);
@@ -117,40 +138,32 @@ class _TestPageState extends State<TestPage> {
     });
   }
 
-  // Build each option button
   Widget buildOptionButton(String text, int value) {
     return Padding(
-      padding: const EdgeInsets.all(4.0), // external for all sides of the widget
+      padding: const EdgeInsets.all(4.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
           ),
-          backgroundColor: Colors.white60, // Option button background color
-          padding: const EdgeInsets.symmetric(vertical: 12.0), // Internal padding
+          backgroundColor: Colors.white60,
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
         ),
-        onPressed: () => handleOptionSelection(value), // Handle button press
+        onPressed: () => handleOptionSelection(value),
         child: Text(
           text,
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 30),
         ),
       ),
     );
   }
 
-  // Handle the selection of an option
   void handleOptionSelection(int option) {
-    // Create a new list of responses including the selected option
     List<int> updatedResponses = List.from(widget.responses);
     updatedResponses.add(option);
-
     int newColorBlindnessCounter = widget.colorBlindnessCounter;
     int newLowVisionCounter = widget.lowVisionCounter;
-
-    // Determine the correct answers for the current test
     List<int> correctAnswers = widget.isTest ? colorBlindnessAnswers : lowVisionAnswers;
-
-    // Increment the respective counter if the option number matches the correct answer
     if (option == correctAnswers[widget.photoIndex]) {
       if (widget.isTest) {
         newColorBlindnessCounter++;
@@ -159,14 +172,11 @@ class _TestPageState extends State<TestPage> {
       }
     }
 
-    // Check if the current photo is the last one in the test
     bool isLastPhoto = widget.photoIndex == (widget.isTest ? colorBlindnessPhotos : lowVisionPhotos).length - 1;
-
     if (isLastPhoto) {
-      // If last photo, navigate to the next test or the results page
-      Navigator.push( // to a new page
+      Navigator.push(
         context,
-        MaterialPageRoute(  //creates a route that uses a material design page transition
+        MaterialPageRoute(
           builder: (context) => widget.isTest
               ? TestPage(
             isTest: false,
@@ -174,15 +184,16 @@ class _TestPageState extends State<TestPage> {
             responses: updatedResponses,
             colorBlindnessCounter: newColorBlindnessCounter,
             lowVisionCounter: newLowVisionCounter,
+            username: widget.username,
           )
               : ResultPage(
             colorBlindnessCounter: newColorBlindnessCounter,
             lowVisionCounter: newLowVisionCounter,
+            username: widget.username,
           ),
         ),
       );
     } else {
-      // Otherwise, navigate to the next photo
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -192,6 +203,7 @@ class _TestPageState extends State<TestPage> {
             responses: updatedResponses,
             colorBlindnessCounter: newColorBlindnessCounter,
             lowVisionCounter: newLowVisionCounter,
+            username: widget.username,
           ),
         ),
       );
